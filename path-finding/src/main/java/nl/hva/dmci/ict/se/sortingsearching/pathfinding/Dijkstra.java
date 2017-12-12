@@ -31,7 +31,7 @@ public class Dijkstra {
     private double[] distTo;          // distTo[v] = distance  of shortest s->v path
     private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s->v path
     private IndexMinPQ<Double> pq;    // priority queue of vertices
-    public int length;
+    public int knopen;
 
     /**
      * Computes a shortest paths tree from <tt>s</tt> to every other vertex in
@@ -44,22 +44,28 @@ public class Dijkstra {
     public Dijkstra(EdgeWeightedDigraph G, int s) {
         for (DirectedEdge e : G.edges()) {
             if (e.weight() < 0)
-                throw new IllegalArgumentException("edge " + e + " has negative weight");
+                throw new IllegalArgumentException("edge " + e + " has negative weight"); 
         }
 
-        distTo = new double[G.V()];
+        distTo = new double[G.V()]; 
         edgeTo = new DirectedEdge[G.V()];
         for (int v = 0; v < G.V(); v++)
-            distTo[v] = Double.POSITIVE_INFINITY;
+            distTo[v] = Double.POSITIVE_INFINITY;  
         distTo[s] = 0.0;
 
         // relax vertices in order of distance from s
         pq = new IndexMinPQ<Double>(G.V());
         pq.insert(s, distTo[s]);
         while (!pq.isEmpty()) {
+//             knopen++;
             int v = pq.delMin();
             for (DirectedEdge e : G.adj(v))
+            {
+//                System.out.println(e);
+//                System.out.println( G.adj(v));
+//                knopen++;
                 relax(e);
+            }
         }
         // check optimality conditions
         assert check(G, s);
@@ -68,12 +74,18 @@ public class Dijkstra {
     // relax edge e and update pq if changed
     private void relax(DirectedEdge e) {
         int v = e.from(), w = e.to();
-        
-        if (distTo[w] > distTo[v] + e.weight()) {
+//        knopen++;
+        if (distTo[w] > distTo[v] + e.weight()) 
+        {
+//            knopen++;
             distTo[w] = distTo[v] + e.weight();
             edgeTo[w] = e;
-            if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
-            else                pq.insert(w, distTo[w]);
+            if (pq.contains(w)){
+                pq.decreaseKey(w, distTo[w]);
+            } 
+            else{                
+                pq.insert(w, distTo[w]); 
+            }  
         }
     }
 
